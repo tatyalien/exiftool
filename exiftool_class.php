@@ -14,81 +14,81 @@
  */
 class Exiftool
 {
-	/** @var File */
-	private $file;
-	/** @var BasePath */
-	private $basePath = '/';
-	/** @var Replace */
-	private $replace = true;
-	/** @var Replace */
-	private $rowStart = 2;
-	/** @var Message error */
-	private $messageError = '';
-	/** @var Message done */
-	private $messageDone = '';
+    /** @var File */
+    private $file;
+    /** @var BasePath */
+    private $basePath = '/';
+    /** @var Replace */
+    private $replace = true;
+    /** @var startovní pozice čtení csv souboru */
+    private $rowStart = 2;
+    /** @var Message error */
+    private $messageError = '';
+    /** @var Message done */
+    private $messageDone = '';
 
     /**
      * @return string $this->messageDone
      */
- 	public function getMessageDone()
-	{
-		return $this->messageDone;
-	}
+    public function getMessageDone()
+    {
+        return $this->messageDone;
+    }
 
     /**
      * @return string $this->messageError
      */
- 	public function getMessageError()
-	{
-		return $this->messageError;
-	}   
+    public function getMessageError()
+    {
+        return $this->messageError;
+    }
 
     /**
      * @param string $file
      * @return void
      */
-	public function setFile($file)
-	{
-		$this->file = $file;
-	}
+    public function setFile($file)
+    {
+        $this->file = $file;
+    }
 
     /**
      * @param string $basePath [default value = '/']
      * @return void
      */
-	public function setBasePath($basePath)
-	{
-		$this->basePath = $basePath;
-	}
+    public function setBasePath($basePath)
+    {
+        $this->basePath = $basePath;
+    }
 
     /**
      * @param boolean $replace [default value = 'true']
      * @return void
      */
-	public function setReplace($replace)
-	{
-		$this->replace = (boolean) $replace;
-	}
+    public function setReplace($replace)
+    {
+        $this->replace = (boolean) $replace;
+    }
 
     /**
      * @param int $rowStart [default value = '2']
      * @return void
      */
-	public function setRowStart($rowStart)
-	{
-		$this->rowStart = (int) $rowStart;
-	}
+    public function setRowStart($rowStart)
+    {
+        $this->rowStart = (int) $rowStart;
+    }
     
-	/**
-	 * Spuštění akce na editaci exiftool.
+    /**
+     * Spuštění akce na editaci exiftool.
      * Výsledné informace se po akci dají získat:
      * getMessageError()
      * getMessageDone()
      * 
-	 * @return boolean
-	 */
-	public function import()
-	{
+     * @return boolean
+     */
+    public function import()
+    {
         // kontrola, zda existuje zdrojový soubor
         if (!File_Exists($this->file)){
             $this->messageError = 'Soubor "'.$this->file.'" neexistuje.';
@@ -112,14 +112,16 @@ class Exiftool
         $handle = fopen($this->file, "r");
         while (($data = fgetcsv($handle, 32000, ";")) !== false) {
             if ($i == 1) {
-                /* projdu teďkont v prvním řádku pole a zjistím kde se nachází všechny potřebné hodnoty - sloupce */
+                // projdu teďkont v prvním řádku pole a zjistím kde se nachází všechny potřebné hodnoty - sloupce
                 $a = 0;
                 foreach ($data as & $val) {
-                    /** zde si můžu nastavit názvy sloupců, které budu potřebovat pro funkci */
-                    if (iconv('windows-1250', 'utf-8', trim($val)) == "name")
+                    // zde kontroluji názvy sloupců, které potřebuji pro funkci
+                    if (iconv('windows-1250', 'utf-8', trim($val)) == "name") {
                         $i_name = $a;
-                    if (iconv('windows-1250', 'utf-8', trim($val)) == "date")
+                    }
+                    if (iconv('windows-1250', 'utf-8', trim($val)) == "date") {
                         $i_date = $a;
+                    }
                     $a++;
                 }
                 // odstraním dočasnou proměnnou
@@ -139,7 +141,7 @@ class Exiftool
                 // rozsekám data do pole - řádek a opravím si kódování
                 $name = iconv('windows-1250', 'utf-8', trim($data[$i_name]));
                 $date = iconv('windows-1250', 'utf-8', trim($data[$i_date]));
-    
+                
                 // kontrola existence souboru
                 if(!$this->fileExist($name, $this->basePath)) {
                     $error .= 'Řádek '.$i.' => name "'.$_SERVER['DOCUMENT_ROOT'].$this->basePath.$name.'" neexistuje.<br />';
@@ -149,6 +151,7 @@ class Exiftool
                     $date = '';
                     continue;
                 }
+                
                 // kontrola zadaného data + převedení na formát [rrrr:mm:dd hh:mm:ss]
                 $dateNew = $this->kontrolaData($date); 
                 if($dateNew === false) {
@@ -159,19 +162,20 @@ class Exiftool
                     $date = '';
                     continue;
                 }
+                
                 // dodání cesty k obrázku
                 $imageName = $_SERVER['DOCUMENT_ROOT'].$this->basePath.$name;
                 eval(`"exiftool(-k).exe" -php -q -AllDates="$dateNew" -filemodifydate="$dateNew" -filecreatedate="$dateNew" $replace $imageName`);
                 $dateNew = NULL;
                 $i_images++;
             }
-            // navíšení hodnot a vynulování proměnných
+            
             $i++;
         }
         $this->messageError = $error;
         $this->messageDone = "Hotovo.<br />Zpracováno obrázků: $i_images";
         return true; 
-	}
+    }
 
     /** Kontrola data
      * @param string $date ve formátu: [rrrr:mm:dd hh:mm:ss], nebo [dd.mm.rrrr hh:mm:ss]
@@ -183,12 +187,13 @@ class Exiftool
         while (!(strpos($date, '  ') === false)) {
             $date = str_replace('  ', ' ', $date);
         }
-    
+        
         $poleDate = explode(' ', $date);
         // pokud není zadaný datum a čas
         if(count($poleDate) != 2) {
             return false;
         }
+        
         // kontrola pokud je datum oddělený ":"
         if (!(strpos($poleDate[0], ":") === false)) {
             $poleOnlyDate = explode(':', $poleDate[0]);
@@ -215,11 +220,11 @@ class Exiftool
     }
     
     /** Kontrola data
-    * @param string datum ve formátu d.m.rrrr
-    * 
-    * @return bool platnost data
-    * @copyright Jakub Vrána, http://php.vrana.cz/
-    */
+     * @param string datum ve formátu d.m.rrrr
+     * 
+     * @return bool platnost data
+     * @copyright Jakub Vrána, http://php.vrana.cz/
+     */
     private function platne_datum($datum) {
         return preg_match('~^([1-9]|19|[12][0-8]|29(?=\\.([^2]|2\\.(([02468][048]|[13579][26])00|[0-9]{2}(0[48]|[2468][048]|[13579][26]))))|30(?=\\.[^2])|31(?=\\.([13578][02]?\\.)))\\.([1-9]|1[012])\\.[0-9]{4}$~D', $datum);
     }

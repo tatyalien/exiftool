@@ -8,17 +8,14 @@ $exiftool->setFile(__DIR__ . '/import.csv');
 // vypnutí přepisování originálu obrázku
 //$exiftool->setReplace(false);
 $result = $exiftool->import();
-if ($result)
-{
+if ($result) {
     echo "<h1>Exiftool proběhl úspěšně.</h1>";
     echo $exiftool->getMessageDone();
-    if ($exiftool->getMessageError() != '')
-    {
+    if ($exiftool->getMessageError() != '') {
         echo "<br>Výpis chyb:<br />";
         echo $exiftool->getMessageError();
     }
-} else
-{
+} else {
     echo "<h1>Exiftool proběhl neúspěšně.</h1>";
     echo $exiftool->getMessageError();
 }

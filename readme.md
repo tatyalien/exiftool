@@ -11,13 +11,17 @@ Program na dávkovou editaci EXIF u obrázků [jpg, jpeg].
 
 Více informací o exiftool:
 --------------------------
-1) http://freeweb.siol.net/hrastni3/foto/exif/exiftoolgui.htm
-2) http://www.sno.phy.queensu.ca/~phil/exiftool/faq.html
+  1) http://freeweb.siol.net/hrastni3/foto/exif/exiftoolgui.htm
+
+  2) http://www.sno.phy.queensu.ca/~phil/exiftool/faq.html
 
 
 Příklad:
+--------
   1) obrázky si uložíme do adresáře root_webu/images/...
+
   2) importační soubor uložíme do root_webu
+
   3) php soubor:
 
 	<?
