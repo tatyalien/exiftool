@@ -7,7 +7,7 @@
  * @param setFile - zdrojový csv soubor.
  * @param setBasePath - cesta k obrázkům
  * @param setReplace - přepisování originálního obrázku
- * @param setRowStart - star čtení dat na řádku X csv souboru
+ * @param setRowStart - start čtení dat na řádku X csv souboru
  * 
  * Spuštění akce:
  * @param import()
@@ -105,7 +105,7 @@ class Exiftool
         $date = '';
         $dateNew = NULL;
         
-        // pokud je replace vyplé, zachová se originální soubor a upraví se kopie [originál se přejmenuje na name.jpg_original]   
+        // pokuď je replace vyplé, zachová se originální soubor a upraví se kopie [originál se přejmenuje na name.jpg_original]   
         $replace = ($this->replace) ? '-overwrite_original' : '';
         
         // načtení zdrojového csv souboru
@@ -126,7 +126,7 @@ class Exiftool
                 }
                 // odstraním dočasnou proměnnou
                 unset($a);
-                // pokud není nastavena potřebná hodnota, ukončím funkci
+                // pokuď není nastavena potřebná hodnota, ukončím funkci
                 if (is_null($i_name) or is_null($i_date)) {
                     $error .= "Vytvořeno: " . date("d.m.y G:i:s") . "<br />";
                     $error .= "Ve zdrojovém souboru nejsou správně data, data musí obsahovat sloupce (oddělené středníkem - csv):<br />";
@@ -183,18 +183,18 @@ class Exiftool
      * @return boolean
      */
     private function kontrolaData($date) {
-        // odstranění více mezer [poku uživatel zadal více mezi datumem a časem]
+        // odstranění více mezer [pokuď uživatel zadal více mezi datumem a časem]
         while (!(strpos($date, '  ') === false)) {
             $date = str_replace('  ', ' ', $date);
         }
         
         $poleDate = explode(' ', $date);
-        // pokud není zadaný datum a čas
+        // pokuď není zadaný datum a čas
         if(count($poleDate) != 2) {
             return false;
         }
         
-        // kontrola pokud je datum oddělený ":"
+        // kontrola pokuď je datum oddělený ":"
         if (!(strpos($poleDate[0], ":") === false)) {
             $poleOnlyDate = explode(':', $poleDate[0]);
             // odstranění úvodní nuly
@@ -208,7 +208,7 @@ class Exiftool
             if(!$this->platne_datum(trim($poleOnlyDate[2]).'.'.trim($poleOnlyDate[1]).'.'.trim($poleOnlyDate[0]))) {
                 return false;
             }
-            // pokud datum je v platném rozsahu vracím zpět neupravný datum [je ve správném formátu]
+            // pokuď datum je v platném rozsahu vracím zpět neupravný datum [je ve správném formátu]
             return $date;
         } else {
             if(!$this->platne_datum($poleDate[0])) {
